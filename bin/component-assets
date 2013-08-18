@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+
+/**
+ * Update the files in the manifest using file glob patterns
+ *
+ *    $ component assets scripts:*.js styles:*.css images:*.css
+ */
+
+var program = require('commander');
+var glob = require('glob');
+var async = require('async');
+var fs = require('fs');
+var path = require('path');
+var resolve = path.resolve;
+var exists = fs.existsSync;
+var manifestPath = resolve('component.json');
+
+program
+  .version(require('../package').version)
+  .usage('[type:glob ...]')
+  .parse(process.argv);
+
+if(!exists('component.json')) {
+  fail('No component.json found');
+}
+
+var manifest = require(manifestPath);
+
+var types = program.args.length > 0 ? program.args : ['scripts:*.js', 'styles:*.css', 'files:files/*', 'images:images/*', 'templates:templates/*'];
+
+async.map(types, getFiles, function(err){
+  if(err) return fail(err);
+  fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), function(){
+    console.log();
+    console.log('Done!');
+  });
+});
+
+function getFiles(type, done){
+  type = type.split(':');
+  var field = type[0];
+  var pattern = type[1];
+  glob(pattern, function(err, files){
+    if(err) return done(err);
+    manifest[field] = files;
+    done();
+  });
+}
+
+function fail(msg) {
+  console.error('Error!');
+  console.error(msg);
+  process.exit(1);
+}

@@ -1,0 +1,21 @@
+{
+  "name": "component-assets",
+  "version": "0.0.1",
+  "description": "Easily add assets to your component.json",
+  "main": "index.js",
+  "scripts": {},
+  "repository": "",
+  "keywords": [
+    "component"
+  ],
+  "bin": {
+    "component-assets": "bin/component-assets"
+  },
+  "author": "Anthony Short",
+  "license": "BSD",
+  "dependencies": {
+    "commander": "~2.0.0",
+    "async": "~0.2.9",
+    "glob": "~3.2.6"
+  }
+}
