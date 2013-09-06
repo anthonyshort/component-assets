@@ -39,10 +39,16 @@ async.map(types, getFiles, function(err){
 function getFiles(type, done){
   type = type.split(':');
   var field = type[0];
-  var pattern = type[1];
-  glob(pattern, function(err, files){
+  var list = [];
+  async.forEach(type[1].split(","), function (pattern, done) {
+    glob(pattern, function (err, files) {
+      if(err) return done(err);
+      list = list.concat(files);
+      done();
+    });
+  }, function (err) {
     if(err) return done(err);
-    manifest[field] = files;
+    manifest[field] = list;
     done();
   });
 }
